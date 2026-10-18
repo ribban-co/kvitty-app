@@ -5,6 +5,7 @@ import { logAudit } from "../audit";
 import { bankTransactions, bankAccounts } from "@/lib/db/schema";
 import { eq, and, desc, count, gte, lte } from "drizzle-orm";
 import { generateTransactionHash } from "@/lib/utils/transaction-hash";
+import { withReceipts } from "../receipts";
 
 // Input schemas
 const createBankTransactionSchema = z.object({
@@ -61,6 +62,7 @@ export const listBankTransactions = authenticatedProcedure
         where: whereClause,
         with: {
           bankAccount: true,
+          ...withReceipts,
         },
         orderBy: [desc(bankTransactions.accountingDate)],
         limit: input.limit,
@@ -88,6 +90,7 @@ export const getBankTransaction = authenticatedProcedure
       with: {
         bankAccount: true,
         mappedToJournalEntry: true,
+        ...withReceipts,
       },
     });
 

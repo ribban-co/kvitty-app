@@ -9,6 +9,7 @@ import {
   type JournalEntryLine,
 } from "@/lib/db/schema";
 import { eq, and, desc, sql, count, gte, lte } from "drizzle-orm";
+import { withReceipts } from "../receipts";
 
 // Input schemas
 const journalEntryLineSchema = z.object({
@@ -97,6 +98,7 @@ export const listJournalEntries = authenticatedProcedure
         where: whereClause,
         with: {
           lines: true,
+          ...withReceipts,
         },
         orderBy: [desc(journalEntries.verificationNumber)],
         limit: input.limit,
@@ -124,6 +126,7 @@ export const getJournalEntry = authenticatedProcedure
       with: {
         lines: true,
         fiscalPeriod: true,
+        ...withReceipts,
       },
     });
 
